@@ -1104,7 +1104,7 @@ describe "Parameter type mapping /" do
     end
     
     it "should execute function with table of records type (defined inside package and includes NVARCHAR columns) parameter" do
-      plsql.test_collections.test_nstring(@nstrings).should == ['NCh 1NStr 1,NCh 2NStr 2,NCh 3NStr 3,NCh 4NStr 4,NCh 5NStr 5,', {:p_out => @nstrings}]
+      plsql.test_collections.test_nstring(@nstrings).should == [(1..5).map{|i| "NCh #{i}NStr #{i},"}.join, {:p_out => @nstrings}]
     end
 
     it "should execute function with object array and return object array output parameter" do

@@ -53,17 +53,16 @@ module PLSQL
         precision, scale = metadata[:data_precision], metadata[:data_scale]
         "NUMBER#{precision ? "(#{precision}#{scale ? ",#{scale}": ""})" : ""}"
       when 'VARCHAR2', 'CHAR'
-        length = metadata[:char_used] == 'C' ? metadata[:char_length] : metadata[:data_length]
-        if length && (char_used = metadata[:char_used])
-          length = "#{length} #{char_used == 'C' ? 'CHAR' : 'BYTE'}"
+        length = case metadata[:char_used]
+        when 'C' then "#{metadata[:char_length]} CHAR"
+        when 'B' then "#{metadata[:data_length]} BYTE"
+        else
+          metadata[:data_length]
         end
-        "#{metadata[:data_type]}#{length ? "(#{length})": ""}"
+        "#{metadata[:data_type]}#{length && "(#{length})"}"
       when 'NVARCHAR2', 'NCHAR'
         length = metadata[:char_length]
-        if length
-          length = "#{length}"
-        end
-        "#{metadata[:data_type]}#{length ? "(#{length})": ""}"
+        "#{metadata[:data_type]}#{length && "(#{length})"}"
       when 'PL/SQL TABLE', 'TABLE', 'VARRAY', 'OBJECT'
         metadata[:sql_type_name]
       else
